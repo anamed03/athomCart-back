@@ -9,11 +9,13 @@ const APP_URL = "http://localhost/";
 const FRONT_URL = "http://localhost:5173/";
 const PORT = process.env.PORT;
 app.use(express.json())
-app.use(cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Methods que deseas permitir
-    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados que deseas permitir
-}));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
 
 
 

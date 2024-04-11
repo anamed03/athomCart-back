@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev":"nodemon index.js",
-    "start":"node index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": " <al222210590@gmail.com> (Ana Mejia <al222210590@gmail.com>)",
   "license": "ISC",
