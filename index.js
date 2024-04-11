@@ -14,7 +14,7 @@ app.use(cors(
 ))
 
 // Let us run the server. SO its running,
-app.listen(5000, ()=>{
+app.listen(3000, ()=>{
     console.log('Server is running on port 3000')
 })
 
