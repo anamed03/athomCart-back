@@ -5,7 +5,7 @@ const mysql = require('mysql')
 const cors = require('cors')
 const router = express.Router();
 
-const APP_URL = "http://localhost";
+const APP_URL = "http://localhost/";
 
 
 app.use(express.json())
