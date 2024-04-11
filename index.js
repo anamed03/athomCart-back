@@ -10,8 +10,7 @@ const APP_URL = "http://localhost";
 
 app.use(express.json())
 app.use(cors(
-    {credentials: true,
-    origin: [APP_URL ],}
+    {origin: [APP_URL ],}
 ))
 
 // Let us run the server. SO its running,
