@@ -5,9 +5,14 @@ const mysql = require('mysql')
 const cors = require('cors')
 const router = express.Router();
 
+const APP_URL = "http://localhost";
+
 
 app.use(express.json())
-app.use(cors())
+app.use(cors(
+    {credentials: true,
+    origin: [APP_URL ],}
+))
 
 // Let us run the server. SO its running,
 app.listen(5000, ()=>{
