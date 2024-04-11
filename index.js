@@ -6,17 +6,20 @@ const cors = require('cors')
 const router = express.Router();
 
 const APP_URL = "http://localhost/";
-
+const FRONT_URL = "http://localhost:5173/";
 
 app.use(express.json())
-app.use(cors(
-    {origin: [APP_URL ],}
-))
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Methods que deseas permitir
+    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados que deseas permitir
+}));
+
 
 // Let us run the server. SO its running,
-app.listen(3000, ()=>{
-    console.log('Server is running on port 3000')
-})
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+  });
 
 // Let us create our database (mysql)
 const db = mysql.createConnection({
@@ -24,8 +27,13 @@ const db = mysql.createConnection({
     host: 'db5015663105.hosting-data.io',
     password: 'MEMAMMCJ02j#', //If you have set xampp password please enter it here
     database: 'dbs12785457',
-})
+});
 
+if (db === null) {
+    console.log("Hay un error en la base de datos");
+} else {
+    console.log("Conexión a la base de datos establecida correctamente");
+}
 
 
 //logica para mandar datos a la base de datos 
