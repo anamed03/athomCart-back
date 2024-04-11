@@ -67,7 +67,7 @@ app.post('/register', (req, res)=>{
 
 // Now we need to login with these credentials from a registered User
 // Lets create another route
-app.post('/login', (req, res)=>{
+app.post('/', (req, res)=>{
      // We need to get variables sent from the form
 
      const sentloginUserName =  req.body.LoginUserName
