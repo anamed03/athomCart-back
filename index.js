@@ -6,7 +6,7 @@ const cors = require('cors');
 const router = express.Router();
 
 // Variables de entorno
-const FRONT_URL = process.env.FRONT_URL || http://localhost:5173/;
+const FRONT_URL = process.env.FRONT_URL || "http://localhost:5173/";
 const PORT = process.env.PORT;
 
 // Middleware
