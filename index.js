@@ -6,12 +6,12 @@ const cors = require('cors')
 const router = express.Router();
 
 const APP_URL = "http://localhost/";
-const FRONT_URL = "http://localhost:5173/";
+const FRONT_URL = process.env.FRONT_URL;
 const PORT = process.env.PORT;
 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: FRONT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Methods que deseas permitir
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados que deseas permitir
 }));
