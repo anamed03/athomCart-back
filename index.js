@@ -1,32 +1,32 @@
-// Our dependecies
-const express = require('express')
-const app = express()
-const mysql = require('mysql')
-const cors = require('cors')
+// Dependencias
+const express = require('express');
+const app = express();
+const mysql = require('mysql');
+const cors = require('cors');
 const router = express.Router();
 
-const APP_URL = "http://localhost/";
-const FRONT_URL = process.env.FRONT_URL;
+// Variables de entorno
+const FRONT_URL = process.env.FRONT_URL || http://localhost:5173/;
 const PORT = process.env.PORT;
 
-app.use(express.json())
+// Middleware
+app.use(express.json());
 app.use(cors({
     origin: FRONT_URL,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Methods que deseas permitir
-    allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados que deseas permitir
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-
-// Let us run the server. SO its running,
+// Inicio del servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
-  });
+});
 
-// Let us create our database (mysql)
+// Conexión a la base de datos
 const db = mysql.createConnection({
     user: 'dbu918380',
     host: 'db5015663105.hosting-data.io',
-    password: 'MEMAMMCJ02j#', //If you have set xampp password please enter it here
+    password: 'MEMAMMCJ02j#',
     database: 'dbs12785457',
 });
 
@@ -36,83 +36,61 @@ if (db === null) {
     console.log("Conexión a la base de datos establecida correctamente");
 }
 
+// Rutas para registro y login de usuarios
+app.post('/register', (req, res) => {
+    const { Email, UserName, Password } = req.body;
+    const SQL = 'INSERT INTO users (email, username, password) VALUES (?, ?, ?)';
+    const Values = [Email, UserName, Password];
 
-//logica para mandar datos a la base de datos 
-
-app.post('/register', (req, res)=>{
-    // We need to get variables sent from the form
-    const sentEmail =  req.body.Email
-    const sentUserName =  req.body.UserName
-    const sentPassword =  req.body.Password
-
-    // Lets create SQL statement to insert the user to the Database table Users
-    const SQL = 'INSERT INTO users (email, username, password) VALUES (?,?,?)' //We are going to enter these values through a variable
-    const Values = [sentEmail, sentUserName, sentPassword]
-
-    // Query to execute the sql statement stated above
-    db.query(SQL, Values, (err, results)=>{
-        if(err){
-            res.send(err)
+    db.query(SQL, Values, (err, results) => {
+        if (err) {
+            console.error('Error al insertar usuario:', err);
+            res.status(500).json({ error: 'Error al insertar usuario' });
+            return;
         }
-        else{
-            console.log('User inserted succcessfully!')
-            res.send({message: 'User added!'})
-            // Let try and see
-            // user has not been submitted, we need to use Express and cors
-            // Successful
-        }
-    })
-    
-})
+        console.log('Usuario insertado correctamente');
+        res.status(200).json({ message: 'Usuario insertado correctamente' });
+    });
+});
 
-// Now we need to login with these credentials from a registered User
-// Lets create another route
-app.post('api//login', (req, res)=>{
-     // We need to get variables sent from the form
+app.post('/login', (req, res) => {
+    const { LoginUserName, LoginPassword } = req.body;
+    const SQL = 'SELECT * FROM users WHERE username = ? AND password = ?';
+    const Values = [LoginUserName, LoginPassword];
 
-     const sentloginUserName =  req.body.LoginUserName
-     const sentLoginPassword =  req.body.LoginPassword
- 
-     // Lets create SQL statement to insert the user to the Database table Users
-     const SQL = 'SELECT * FROM users WHERE username = ? && password = ?' //We are going to enter these values through a variable
-     const Values = [sentloginUserName, sentLoginPassword]
+    db.query(SQL, Values, (err, results) => {
+        if (err) {
+            console.error('Error al realizar el login:', err);
+            res.status(500).json({ error: 'Error al realizar el login' });
+            return;
+        }
+        if (results.length > 0) {
+            res.status(200).json(results);
+        } else {
+            res.status(401).json({ message: `Las credenciales no coinciden` });
+        }
+    });
+});
 
-      // Query to execute the sql statement stated above
-    db.query(SQL, Values, (err, results)=>{
-        if(err){
-            console.log('Error')
-        }
-        if(results.length > 0){
-            res.send(results)
-        }
-        else{
-            res.send({message: `Credentials Don't match!`})
-            // This should be goood, lets try to login.
-        }
-    })
-})
-
-//////////////////////////////////////////////LOGICA PRODUCTOS////////////////////////////////////////////////////////////////////////////////////////////////////
-// Ruta para obtener todos los productos
+// Rutas relacionadas con productos
 router.get('/productos', (req, res) => {
     const sqlQuery = 'SELECT * FROM productos';
     db.query(sqlQuery, (err, results) => {
         if (err) {
             console.error('Error al obtener productos:', err);
-            res.status(500).json({ error: 'Error al obtener productos'});
+            res.status(500).json({ error: 'Error al obtener productos' });
             return;
-        } 
+        }
         res.json(results);
     });
 });
 
-// Ruta para editar un producto
 router.put('/productos/:id', (req, res) => {
     const productId = req.params.id;
-    const { QR, Nombre, Categoria, Cantidad } = req.body; // Agregamos Cantidad aquí
+    const { QR, Nombre, Categoria, Cantidad } = req.body;
 
-    const sqlQuery = 'UPDATE productos SET QR = ?, Nombre = ?, Categoria = ?, Cantidad = ? WHERE IdProducto = ?'; // Agregamos Cantidad aquí
-    const values = [QR, Nombre, Categoria, Cantidad, productId]; // Agregamos Cantidad aquí
+    const sqlQuery = 'UPDATE productos SET QR = ?, Nombre = ?, Categoria = ?, Cantidad = ? WHERE IdProducto = ?';
+    const values = [QR, Nombre, Categoria, Cantidad, productId];
 
     db.query(sqlQuery, values, (err, result) => {
         if (err) {
@@ -125,9 +103,6 @@ router.put('/productos/:id', (req, res) => {
     });
 });
 
-
-
-// Ruta para eliminar un producto
 router.delete('/productos/:id', (req, res) => {
     const productId = req.params.id;
 
@@ -145,16 +120,12 @@ router.delete('/productos/:id', (req, res) => {
     });
 });
 
-// Ruta para agregar un nuevo producto
 router.post('/productos', (req, res) => {
-    // Extraemos los datos del cuerpo de la solicitud
     const { QR, Nombre, Categoria } = req.body;
 
-    // Creamos la consulta SQL para insertar el nuevo producto
     const SQL = 'INSERT INTO productos (QR, Nombre, Categoria) VALUES (?, ?, ?)';
     const values = [QR, Nombre, Categoria];
 
-    // Ejecutamos la consulta SQL
     db.query(SQL, values, (err, result) => {
         if (err) {
             console.error('Error al insertar producto:', err);
@@ -166,7 +137,6 @@ router.post('/productos', (req, res) => {
     });
 });
 
-//-----------------------------------------------Arduino--------------------------------------------------------------
 router.get('/productos/ultimo', (req, res) => {
     const sqlQuery = 'SELECT * FROM productos ORDER BY IdProducto DESC LIMIT 1';
     db.query(sqlQuery, (err, result) => {
@@ -177,7 +147,6 @@ router.get('/productos/ultimo', (req, res) => {
         }
         if (result.length > 0) {
             const ultimoProducto = result[0];
-            // Aquí agregamos la categoría al objeto que vamos a devolver
             const respuesta = {
                 IdProducto: ultimoProducto.IdProducto,
                 QR: ultimoProducto.QR,
@@ -192,31 +161,25 @@ router.get('/productos/ultimo', (req, res) => {
     });
 });
 
-
-// Usar el enrutador definido para todas las rutas bajo /api
-app.use('/api', router);
-
-//////////////////////////////////////////////////////LOGICA USUARIOS///////////////////////////////////////////////////////////////////////////77
-// Ruta para obtener todos los usuarios
+// Rutas relacionadas con usuarios
 router.get('/users', (req, res) => {
     const sqlQuery = 'SELECT * FROM users';
     db.query(sqlQuery, (err, results) => {
         if (err) {
             console.error('Error al obtener usuarios:', err);
-            res.status(500).json({ error: 'Error al obtener usuarios'});
+            res.status(500).json({ error: 'Error al obtener usuarios' });
             return;
-        } 
+        }
         res.json(results);
     });
 });
 
-// Ruta para editar un producto
 router.put('/users/:id', (req, res) => {
     const userId = req.params.id;
-    const {  email, username, password} = req.body; // Agregamos Password aquí
+    const { email, username, password } = req.body;
 
-    const sqlQuery = 'UPDATE users SET  email = ?, username = ?, password = ? WHERE id = ?'; // Agregamos Password aquí
-    const values = [ email, username, password, userId]; // Agregamos Cantidad aquí
+    const sqlQuery = 'UPDATE users SET email = ?, username = ?, password = ? WHERE id = ?';
+    const values = [email, username, password, userId];
 
     db.query(sqlQuery, values, (err, result) => {
         if (err) {
@@ -229,9 +192,6 @@ router.put('/users/:id', (req, res) => {
     });
 });
 
-
-
-// Ruta para eliminar un producto
 router.delete('/users/:id', (req, res) => {
     const userId = req.params.id;
 
@@ -241,7 +201,7 @@ router.delete('/users/:id', (req, res) => {
     db.query(sqlQuery, values, (err, result) => {
         if (err) {
             console.error('Error al eliminar usuario:', err);
-            res.status(500).json({ error: 'Error al eliminar uaurio' });
+            res.status(500).json({ error: 'Error al eliminar usuario' });
             return;
         }
         console.log('Usuario eliminado exitosamente');
@@ -249,16 +209,12 @@ router.delete('/users/:id', (req, res) => {
     });
 });
 
-// Ruta para agregar un nuevo producto
 router.post('/users', (req, res) => {
-    // Extraemos los datos del cuerpo de la solicitud
     const { email, username, password } = req.body;
 
-    // Creamos la consulta SQL para insertar el nuevo producto
     const SQL = 'INSERT INTO users (email, username, password) VALUES (?, ?, ?)';
     const values = [email, username, password];
 
-    // Ejecutamos la consulta SQL
     db.query(SQL, values, (err, result) => {
         if (err) {
             console.error('Error al insertar usuario:', err);
@@ -270,8 +226,5 @@ router.post('/users', (req, res) => {
     });
 });
 
-
 // Usar el enrutador definido para todas las rutas bajo /api
 app.use('/api', router);
-
-//------------------------------------------logica para las graficas -----------------------------------------------------------------------------
