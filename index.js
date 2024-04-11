@@ -16,10 +16,10 @@ app.listen(5000, ()=>{
 
 // Let us create our database (mysql)
 const db = mysql.createConnection({
-    user: 'root',
-    host: 'localhost',
-    password: '', //If you have set xampp password please enter it here
-    database: 'db_integra',
+    user: 'dbu918380',
+    host: 'db5015663105.hosting-data.io',
+    password: 'MEMAMMCJ02j#', //If you have set xampp password please enter it here
+    database: 'dbs12785457',
 })
 
 
